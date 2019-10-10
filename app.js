@@ -97,7 +97,7 @@ superagent.get(allbookUrl)
             console.log(err);
         }
 
-        let urls = res.slice(0,100);
+        let urls = res.slice(0,3000);
 
         async.mapLimit(urls, 10, function(url, callback) {
             fetchUrl(url, callback);
