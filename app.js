@@ -108,7 +108,7 @@ superagent.get(allbookUrl)
 
             app.get('/', function (req, res, next) {
             	// body...
-            	res.send(result);
+            	res.send(results);
             })
             let port = process.env.PORT;
 			if (port == null || port == "") {
