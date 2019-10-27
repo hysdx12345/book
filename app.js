@@ -97,7 +97,7 @@ superagent.get(allbookUrl)
             console.log(err);
         }
 
-        let urls = res.slice(0,3000);
+        let urls = res.slice(0,50);
 
         async.mapLimit(urls, 10, function(url, callback) {
             fetchUrl(url, callback);
@@ -107,7 +107,6 @@ superagent.get(allbookUrl)
             }
 
             app.get('/', function (req, res, next) {
-            	// body...
             	res.send(results);
             })
             let port = process.env.PORT;
