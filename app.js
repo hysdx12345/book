@@ -97,24 +97,41 @@ superagent.get(allbookUrl)
             console.log(err);
         }
 
-        let urls = res.slice(0,50);
+        let allUrls = res;
 
-        async.mapLimit(urls, 10, function(url, callback) {
-            fetchUrl(url, callback);
-        }, function(err, results) {
-            if (err) {
-                console.log(err);
-            }
+        app.get('/fr',function (req, res){
+            urls = allUrls.slice(req.query.start||0,req.query.end||20);
 
-            app.get('/', function (req, res, next) {
-            	res.send(results);
+            async.mapLimit(urls, 5, function(url, callback) {
+                fetchUrl(url, callback);
+            }, function(err, results) {
+                if (err) {
+                    console.log(err);
+                }
+                res.send(results);
             })
-            let port = process.env.PORT;
-			if (port == null || port == "") {
-			  port = 3000;
-			}
-			app.listen(port);
-            // console.log('最终抓取数据: ');
-            // console.log(results);
         })
+
+        // let urls = res.slice(0,50);
+
+        // async.mapLimit(urls, 10, function(url, callback) {
+        //     fetchUrl(url, callback);
+        // }, function(err, results) {
+        //     if (err) {
+        //         console.log(err);
+        //     }
+
+        //     app.get('/', function (req, res, next) {
+        //     	res.send(results);
+        //     })
+
+        //     console.log('最终抓取数据: ');
+        //     console.log(results);
+        // })
     })
+
+    let port = process.env.PORT;
+    if (port == null || port == "") {
+      port = 3000;
+    }
+    app.listen(port);
