@@ -8,32 +8,9 @@ const fs = require('fs');
 const express = require('express');
 
 const app = express();
-// const mongoose = require('mongoose');
-
-// const Murl = "mongodb://localhost:27017/book";
-
-
-// mongoose.connect(Murl);
-// const con = mongoose.connection;
-
-// con.on('error', console.error.bind(console, '连接数据库失败'));
-// con.once('open', () => {
-//             //成功连接
-//             //定义一个schema
-//             let bookSchema = mongoose.Schema({
-//                 title: String,
-//                 content: String
-//             });
-//             bookSchema.methods.read = function() {
-//                 console.log("已保存：" + this.title);
-//             }
-//             //继承一个schema
-//             let bookModel = mongoose.model("book", bookSchema);
-
-//         })
-
+//小说地址
 const allbookUrl = 'http://www.quanshuwang.com/book/0/269';
-
+//小说章节抓取策略
 const fetchUrl = function(topicUrl, callback) {
     console.log('正在抓取：' + topicUrl)
     superagent.get(topicUrl)
@@ -44,35 +21,14 @@ const fetchUrl = function(topicUrl, callback) {
             let title = $('.jieqi_title').text().trim();
             let content = $('.mainContenr').text();
             content = content.replace(/\s*/g, "");
-
             result = {
                 "title" : title,
                 "content" : content
             };
-
-			// con.on('error', console.error.bind(console, '连接数据库失败'));
-			// con.once('open', () => {
-			//     //成功连接
-			//     //生成一个document
-	  //           let book = new bookModel({
-	  //               title: title,
-	  //               content: content
-	  //           });
-
-			//     //存放数据
-			//     book.save((err, book) => {
-			//         if (err) return console.log(err);
-			//         apple.read();
-			//         //查找数据
-			//         Model.find({ name: 'book' }, (err, data) => {
-			//             console.log(data);
-			//         })
-			//     });
-			// })
-
             callback(err, result);
         })
 }
+//抓取小说
 superagent.get(allbookUrl)
     .buffer('true')
     .charset('gbk')
@@ -91,17 +47,14 @@ superagent.get(allbookUrl)
         console.log('url待抓取：');
         console.log(topicUrls);
         return topicUrls;
-
     }).then((res, err) => {
         if (err) {
             console.log(err);
         }
-
-        let allUrls = res;
-
+        let allTopicUrls = res;
         app.get('/fr',function (req, res){
-            urls = allUrls.slice(req.query.start||0,req.query.end||20);
-
+            //通过get方法获取抓取小说范围
+            urls = allTopicUrls.slice(req.query.start||0,req.query.end||20);
             async.mapLimit(urls, 5, function(url, callback) {
                 fetchUrl(url, callback);
             }, function(err, results) {
@@ -111,27 +64,10 @@ superagent.get(allbookUrl)
                 res.send(results);
             })
         })
-
-        // let urls = res.slice(0,50);
-
-        // async.mapLimit(urls, 10, function(url, callback) {
-        //     fetchUrl(url, callback);
-        // }, function(err, results) {
-        //     if (err) {
-        //         console.log(err);
-        //     }
-
-        //     app.get('/', function (req, res, next) {
-        //     	res.send(results);
-        //     })
-
-        //     console.log('最终抓取数据: ');
-        //     console.log(results);
-        // })
     })
-
-    let port = process.env.PORT;
-    if (port == null || port == "") {
-      port = 3000;
-    }
-    app.listen(port);
+//端口监听
+let port = process.env.PORT;
+if (port == null || port == "") {
+  port = 3000;
+}
+app.listen(port);
