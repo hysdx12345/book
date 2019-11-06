@@ -51,7 +51,7 @@ superagent.get(allbookUrl)
         let allTopicUrls = res;
         app.get('/fr',function (req, res){
             //通过get方法获取抓取小说范围
-            let start = +req.query.start||0;
+            let start = +req.query.start-1||0;
             let end = +req.query.end||(+req.query.start+1)||30;
             console.log(start,end);
             urls = allTopicUrls.slice(start,end);
