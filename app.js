@@ -51,7 +51,10 @@ superagent.get(allbookUrl)
         let allTopicUrls = res;
         app.get('/fr',function (req, res){
             //通过get方法获取抓取小说范围
-            urls = allTopicUrls.slice(req.query.start||0,req.query.end||req.query.start+50||50);
+            let start = +req.query.start||0;
+            let end = +req.query.end||(+req.query.start+30)||30;
+            console.log(start,end);
+            urls = allTopicUrls.slice(start,end);
             async.mapLimit(urls, 5, function(url, callback) {
                 fetchUrl(url, callback);
             }, function(err, results) {
